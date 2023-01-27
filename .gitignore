@@ -2,3 +2,5 @@
 *.dep
 notmuchfs
 tags
+testdir
+cscope.*
