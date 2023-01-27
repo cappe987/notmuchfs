@@ -94,6 +94,8 @@ $ notmuchfs ~/my_notmuchfs_mountpoint \
     -o mail_dir=~/.maildir
 ~~~
 
+Note that `backing_dir` and `mail_dir` need to be specified with absolute paths.
+
 Notmuchfs is not too interesting unless you create at least one query. Queries
 are directories within the notmuchfs mount point (equally, within the backing
 store).
