@@ -61,9 +61,9 @@
 #include <string.h>
 
 #define FUSE_USE_VERSION 26
-#include <fuse.h>
+#include <fuse/fuse.h>
 
-#include "notmuch.h"
+#include <notmuch.h>
 
 /*============================================================================*/
 
@@ -206,17 +206,25 @@ static void string_replace (char *str_in, char old, char new)
  */
 static void database_open (notmuch_context_t *p_ctx, bool need_write)
 {
+ char config_path[1000];
+
+ /* FIXME: handle config path the correct way accoring `man notmuch-config` */
+ snprintf(config_path, 1000, "%s/.notmuch-config", getenv("HOME"));
+
  LOG_TRACE("notmuch database_open\n");
  PTHREAD_LOCK(&p_ctx->mutex);
  assert(p_ctx->db == NULL);
 
  while (TRUE) {
    notmuch_status_t status =
-     notmuch_database_open(global_config.mail_dir,
-                           need_write ?
-                             NOTMUCH_DATABASE_MODE_READ_WRITE:
-                             NOTMUCH_DATABASE_MODE_READ_ONLY,
-                           &p_ctx->db);
+     notmuch_database_open_with_config(global_config.mail_dir,
+				       need_write ?
+				       NOTMUCH_DATABASE_MODE_READ_WRITE:
+				       NOTMUCH_DATABASE_MODE_READ_ONLY,
+				       config_path,
+				       NULL,
+				       &p_ctx->db,
+				       NULL);
 
    if (status == NOTMUCH_STATUS_SUCCESS) {
      break;
